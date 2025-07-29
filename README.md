@@ -36,7 +36,7 @@ Sistema de e-commerce desarrollado con Ruby on Rails 7 para un desafío técnico
 
 ### 1. Clonar el repositorio
 ```bash
-git clone <repository-url>
+git clone https://github.com/clariursini/puntospoint_ecommerce.git
 cd puntospoint_ecommerce
 ```
 
