@@ -5,7 +5,7 @@ ruby "3.1.2"
 
 # Rails core
 gem "rails", "~> 7.2.2", ">= 7.2.2.1"
-gem "pg", "~> 1.1"
+gem "pg", "~> 1.6"
 gem "puma", ">= 5.0"
 gem "bootsnap", ">= 1.4.4", require: false
 gem "tzinfo-data", platforms: %i[ windows jruby ]
