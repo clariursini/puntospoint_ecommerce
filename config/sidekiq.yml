@@ -1,0 +1,20 @@
+---
+:scheduler:
+  :listened_queues_only: true
+
+:queues:
+  - critical
+  - default
+  - reports
+  - low
+
+:max_retries: 3
+:timeout: 30
+
+# Para desarrollo
+development:
+  :concurrency: 2
+
+# Para producción  
+production:
+  :concurrency: 10

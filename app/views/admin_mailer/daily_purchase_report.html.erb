@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Daily Purchase Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+    .header { background-color: #2196F3; color: white; padding: 20px; text-align: center; }
+    .content { padding: 20px; background-color: #f9f9f9; }
+    .summary { background-color: white; padding: 20px; margin: 15px 0; border-radius: 5px; }
+    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 15px 0; }
+    .summary-item { background-color: #f0f8ff; padding: 15px; border-radius: 5px; text-align: center; }
+    .summary-item h3 { margin: 0 0 10px 0; color: #2196F3; }
+    .summary-item .value { font-size: 24px; font-weight: bold; color: #333; }
+    .section { background-color: white; padding: 20px; margin: 15px 0; border-radius: 5px; }
+    .table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+    .table th, .table td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+    .table th { background-color: #f5f5f5; font-weight: bold; }
+    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📊 Reporte Diario de Compras</h1>
+      <p><%= @report_date.strftime("%A, %d de %B de %Y") %></p>
+    </div>
+    
+    <div class="content">
+      <div class="summary">
+        <h2>📈 Resumen del Día</h2>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <h3>Total Compras</h3>
+            <div class="value"><%= @report_data[:summary][:total_purchases] %></div>
+          </div>
+          <div class="summary-item">
+            <h3>Ingresos Totales</h3>
+            <div class="value">$<%= number_with_precision(@report_data[:summary][:total_revenue], precision: 2) %></div>
+          </div>
+          <div class="summary-item">
+            <h3>Clientes Únicos</h3>
+            <div class="value"><%= @report_data[:summary][:unique_customers] %></div>
+          </div>
+          <div class="summary-item">
+            <h3>Productos Vendidos</h3>
+            <div class="value"><%= @report_data[:summary][:unique_products] %></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h2>🏆 Top Productos por Ingresos</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad Vendida</th>
+              <th>Ingresos</th>
+              <th>N° Compras</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @report_data[:products_sold].first(10).each do |product| %>
+              <tr>
+                <td><%= product[:product_name] %></td>
+                <td><%= product[:quantity_sold] %></td>
+                <td>$<%= number_with_precision(product[:total_revenue], precision: 2) %></td>
+                <td><%= product[:purchase_count] %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="section">
+        <h2>📂 Performance por Categoría</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Categoría</th>
+              <th>Cantidad Vendida</th>
+              <th>Ingresos</th>
+              <th>N° Compras</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @report_data[:categories_performance].each do |category| %>
+              <tr>
+                <td><%= category[:category_name] %></td>
+                <td><%= category[:quantity_sold] %></td>
+                <td>$<%= number_with_precision(category[:total_revenue], precision: 2) %></td>
+                <td><%= category[:purchase_count] %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="section">
+        <h2>👥 Performance por Administrador</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Administrador</th>
+              <th>Cantidad Vendida</th>
+              <th>Ingresos</th>
+              <th>N° Compras</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @report_data[:administrators_performance].each do |admin| %>
+              <tr>
+                <td><%= admin[:administrator_name] %></td>
+                <td><%= admin[:quantity_sold] %></td>
+                <td>$<%= number_with_precision(admin[:total_revenue], precision: 2) %></td>
+                <td><%= admin[:purchase_count] %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="section">
+        <h2>👤 Top Clientes del Día</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Email</th>
+              <th>Cantidad Comprada</th>
+              <th>Total Gastado</th>
+              <th>N° Compras</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @report_data[:top_customers].each do |customer| %>
+              <tr>
+                <td><%= customer[:client_name] %></td>
+                <td><%= customer[:client_email] %></td>
+                <td><%= customer[:quantity_purchased] %></td>
+                <td>$<%= number_with_precision(customer[:total_spent], precision: 2) %></td>
+                <td><%= customer[:purchase_count] %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+      
+      <p>Este reporte se genera automáticamente todos los días a las 6:00 AM.</p>
+    </div>
+    
+    <div class="footer">
+      <p>© <%= Date.current.year %> PuntosPoint E-commerce. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</body>
+</html> 

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>First Purchase Notification</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background-color: #4CAF50; color: white; padding: 20px; text-align: center; }
+    .content { padding: 20px; background-color: #f9f9f9; }
+    .product-info { background-color: white; padding: 15px; margin: 15px 0; border-left: 4px solid #4CAF50; }
+    .customer-info { background-color: white; padding: 15px; margin: 15px 0; border-left: 4px solid #2196F3; }
+    .purchase-details { background-color: white; padding: 15px; margin: 15px 0; border-left: 4px solid #FF9800; }
+    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1><%= @is_creator ? "🎉 ¡Primera venta de tu producto!" : "📦 Nueva primera venta" %></h1>
+    </div>
+    
+    <div class="content">
+      <% if @is_creator %>
+        <h2>¡Felicitaciones <%= @admin.name %>!</h2>
+        <p>Tu producto <strong><%= @product.name %></strong> acaba de tener su primera venta.</p>
+      <% else %>
+        <h2>Notificación de primera venta</h2>
+        <p>El producto <strong><%= @product.name %></strong> (creado por <%= @product.admin.name %>) acaba de tener su primera venta.</p>
+      <% end %>
+      
+      <div class="product-info">
+        <h3>📦 Información del Producto</h3>
+        <p><strong>Nombre:</strong> <%= @product.name %></p>
+        <p><strong>Descripción:</strong> <%= @product.description %></p>
+        <p><strong>Precio:</strong> $<%= @product.price %></p>
+        <p><strong>Creado por:</strong> <%= @product.admin.name %></p>
+      </div>
+      
+      <div class="customer-info">
+        <h3>👤 Información del Cliente</h3>
+        <p><strong>Nombre:</strong> <%= @customer.name %></p>
+        <p><strong>Email:</strong> <%= @customer.email %></p>
+        <p><strong>Teléfono:</strong> <%= @customer.phone %></p>
+        <p><strong>Dirección:</strong> <%= @customer.address %></p>
+      </div>
+      
+      <div class="purchase-details">
+        <h3>💰 Detalles de la Compra</h3>
+        <p><strong>Cantidad:</strong> <%= @purchase.quantity %></p>
+        <p><strong>Precio total:</strong> $<%= @purchase.total_price %></p>
+        <p><strong>Fecha de compra:</strong> <%= @purchase.purchased_at.strftime("%d/%m/%Y %H:%M") %></p>
+      </div>
+      
+      <p>Esta es una notificación automática del sistema de e-commerce.</p>
+    </div>
+    
+    <div class="footer">
+      <p>© <%= Date.current.year %> PuntosPoint E-commerce. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</body>
+</html> 
