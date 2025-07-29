@@ -5,14 +5,18 @@
 puts "🌱 Starting seeds..."
 
 # Temporarily disable callbacks for seeding
-Category.skip_callback(:create, :after, :log_creation)
-Category.skip_callback(:update, :after, :log_changes)
-Category.skip_callback(:destroy, :after, :log_deletion)
-Product.skip_callback(:create, :after, :log_creation)
-Product.skip_callback(:update, :after, :log_changes)
-Product.skip_callback(:destroy, :after, :log_deletion)
-ProductCategory.skip_callback(:create, :after, :log_association)
-ProductCategory.skip_callback(:destroy, :after, :log_disassociation)
+begin
+  Category.skip_callback(:create, :after, :log_creation)
+  Category.skip_callback(:update, :after, :log_changes)
+  Category.skip_callback(:destroy, :after, :log_deletion)
+  Product.skip_callback(:create, :after, :log_creation)
+  Product.skip_callback(:update, :after, :log_changes)
+  Product.skip_callback(:destroy, :before, :log_deletion)
+  ProductCategory.skip_callback(:create, :after, :log_association)
+  ProductCategory.skip_callback(:destroy, :after, :log_disassociation)
+rescue ArgumentError => e
+  puts "Warning: Some callbacks not found, continuing without disabling them: #{e.message}"
+end
 
 # Clear existing data
 puts "Clearing existing data..."
@@ -25,7 +29,7 @@ Admin.destroy_all
 
 # Create Administrators
 puts "Creating administrators..."
-admin1 = Admin.find_or_create_by!(email: 'admin1@example.com') do |admin|
+admin1 = Admin.find_or_create_by!(email: 'admin@example.com') do |admin|
   admin.name = 'Admin 1'
   admin.password = 'password123'
 end
@@ -190,16 +194,32 @@ products = Product.all
 30.times do |i|
   customer = customers.sample
   product = products.sample
-  quantity = rand(1..3)
+  
+  # Ensure quantity doesn't exceed available stock
+  max_quantity = [product.stock, 3].min
+  
+  # Skip if no stock available
+  next if max_quantity <= 0
+  
+  quantity = rand(1..max_quantity)
   purchased_at = i.days.ago
   
-  Purchase.create!(
-    customer: customer,
-    product: product,
-    quantity: quantity,
-    total_price: quantity * product.price,
-    purchased_at: purchased_at
-  )
+  begin
+    purchase = Purchase.create!(
+      customer: customer,
+      product: product,
+      quantity: quantity,
+      total_price: quantity * product.price,
+      purchased_at: purchased_at
+    )
+    
+    # Update product stock after successful purchase
+    product.update!(stock: product.stock - quantity)
+    
+  rescue ActiveRecord::RecordInvalid => e
+    puts "Warning: Could not create purchase for product #{product.name}: #{e.message}"
+    next
+  end
 end
 
 puts "✅ Seeds completed successfully!"
@@ -211,15 +231,19 @@ puts "  - #{Customer.count} customers"
 puts "  - #{Purchase.count} purchases"
 puts ""
 puts "Default admin credentials:"
-puts "  Email: admin1@example.com"
+puts "  Email: admin@example.com"
 puts "  Password: password123"
 
 # Re-enable callbacks
-Category.set_callback(:create, :after, :log_creation)
-Category.set_callback(:update, :after, :log_changes)
-Category.set_callback(:destroy, :after, :log_deletion)
-Product.set_callback(:create, :after, :log_creation)
-Product.set_callback(:update, :after, :log_changes)
-Product.set_callback(:destroy, :after, :log_deletion)
-ProductCategory.set_callback(:create, :after, :log_association)
-ProductCategory.set_callback(:destroy, :after, :log_disassociation)
+begin
+  Category.set_callback(:create, :after, :log_creation)
+  Category.set_callback(:update, :after, :log_changes)
+  Category.set_callback(:destroy, :after, :log_deletion)
+  Product.set_callback(:create, :after, :log_creation)
+  Product.set_callback(:update, :after, :log_changes)
+  Product.set_callback(:destroy, :before, :log_deletion)
+  ProductCategory.set_callback(:create, :after, :log_association)
+  ProductCategory.set_callback(:destroy, :after, :log_disassociation)
+rescue ArgumentError => e
+  puts "Warning: Some callbacks not found, continuing without re-enabling them: #{e.message}"
+end
