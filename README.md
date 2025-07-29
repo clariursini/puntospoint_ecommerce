@@ -74,7 +74,7 @@ Crear archivo `.env` en la raíz del proyecto:
 ```env
 DATABASE_URL=postgresql://localhost/puntospoint_ecommerce_development
 REDIS_URL=redis://localhost:6379/0
-JWT_SECRET=your_jwt_secret_here
+JWT_SECRET=jwt_secret
 ```
 
 ### 6. Iniciar servicios
