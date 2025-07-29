@@ -5,7 +5,7 @@
 
 # Configuración
 BASE_URL="http://localhost:3000/api/v1"
-ADMIN_EMAIL="admin1@example.com"
+ADMIN_EMAIL="admin@example.com"
 ADMIN_PASSWORD="password123"
 
 # Colores para output
