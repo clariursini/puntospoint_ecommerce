@@ -158,6 +158,8 @@ class Api::V1::ProductsController < ApplicationController
   
   def set_product
     @product = Product.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render_error('Producto no encontrado', :not_found)
   end
       
   def product_params

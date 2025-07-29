@@ -57,6 +57,8 @@ class Api::V1::CustomersController < ApplicationController
   
   def set_customer
     @customer = Customer.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render_error('Cliente no encontrado', :not_found)
   end
   
   def customer_params
