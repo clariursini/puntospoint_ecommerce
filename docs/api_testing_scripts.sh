@@ -217,13 +217,18 @@ test_categories() {
     # Update Category
     if [ -n "$TEST_CATEGORY_ID" ]; then
         echo -e "\n${YELLOW}Testing Update Category...${NC}"
+        
+        # Generate unique name with timestamp
+        TIMESTAMP=$(date +%s)
+        UNIQUE_NAME="Updated Test Electronics $TIMESTAMP"
+        
         RESPONSE=$(curl -s -w "%{http_code}" -X PUT "$BASE_URL/categories/$TEST_CATEGORY_ID" \
             -H "Authorization: $JWT_TOKEN" \
             -H "Content-Type: application/json" \
             -d '{
                 "category": {
-                    "name": "Updated Test Electronics",
-                    "description": "Updated test category for electronics"
+                    "name": "'"$UNIQUE_NAME"'",
+                    "description": "Updated test category for electronics with unique name"
                 }
             }')
         
@@ -352,13 +357,18 @@ test_products() {
     # Update Product
     if [ -n "$TEST_PRODUCT_ID" ]; then
         echo -e "\n${YELLOW}Testing Update Product...${NC}"
+        
+        # Generate unique name with timestamp
+        TIMESTAMP=$(date +%s)
+        UNIQUE_NAME="Updated Test iPhone 15 $TIMESTAMP"
+        
         RESPONSE=$(curl -s -w "%{http_code}" -X PUT "$BASE_URL/products/$TEST_PRODUCT_ID" \
             -H "Authorization: $JWT_TOKEN" \
             -H "Content-Type: application/json" \
             -d '{
                 "product": {
-                    "name": "Updated Test iPhone 15",
-                    "description": "Updated test iPhone 15 product description",
+                    "name": "'"$UNIQUE_NAME"'",
+                    "description": "Updated test iPhone 15 product description with unique name",
                     "price": 1099.99,
                     "stock": 75
                 }
