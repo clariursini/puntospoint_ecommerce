@@ -85,15 +85,32 @@ class Product < ApplicationRecord
   end
   
   def self.top_revenue_by_category
-    joins(:purchases, :categories)
-      .group('categories.id', 'categories.name', 'products.id', 'products.name')
-      .order('categories.name', 'SUM(purchases.total_price) DESC')
-      .select('categories.id as category_id, 
-               categories.name as category_name,
-               products.id, 
-               products.name, 
-               SUM(purchases.total_price) as total_revenue
-              ')
+    # Get categories with their total revenue, ordered by revenue descending
+    top_categories = Category.joins(products: :purchases)
+      .group('categories.id', 'categories.name')
+      .order('SUM(purchases.total_price) DESC')
+      .limit(3)
+      .select('categories.id, categories.name, SUM(purchases.total_price) as category_total_revenue')
+    
+    # For each top category, get the top 3 products
+    result = []
+    top_categories.each do |category|
+      category_products = joins(:purchases, :categories)
+        .where(categories: { id: category.id })
+        .group('categories.id', 'categories.name', 'products.id', 'products.name')
+        .order('SUM(purchases.total_price) DESC')
+        .limit(3)
+        .select('categories.id as category_id, 
+                 categories.name as category_name,
+                 products.id, 
+                 products.name, 
+                 SUM(purchases.total_price) as total_revenue
+                ')
+      
+      result.concat(category_products)
+    end
+    
+    result
   end
   
   private
